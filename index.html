@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard KPIs - Banco Ejemplo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Banco Ejemplo</h2>
+    <ul>
+      <li><a href="#" onclick="mostrarVista('sucursal')">🏢 Sucursal</a></li>
+      <li><a href="#" onclick="mostrarVista('matriz')">🏛 Casa Matriz</a></li>
+    </ul>
+  </aside>
+  <main class="main">
+    <header>
+      <h1>Dashboard de KPIs</h1>
+      <div class="filters" id="filtrosSucursal">
+        <div><label for="periodoSelect">Período</label><select id="periodoSelect"></select></div>
+        <div><label for="perspectivaSelect">Perspectiva</label><select id="perspectivaSelect"></select></div>
+        <div><label for="sucursalSelect">Sucursal</label><select id="sucursalSelect"></select></div>
+        <div><label for="oficialSelect">Oficial</label><select id="oficialSelect"></select></div>
+      </div>
+      <div class="filters" id="filtrosMatriz" style="display:none;">
+        <div><label for="periodoMatriz">Período</label><select id="periodoMatriz"></select></div>
+        <div><label for="perspectivaMatriz">Perspectiva</label><select id="perspectivaMatriz"></select></div>
+      </div>
+    </header>
+
+    <section id="vistaSucursal">
+      <div id="cardsSucursal" class="cards"></div>
+      <canvas id="heatmapSucursal" height="80"></canvas>
+      <div id="tablaIndicadoresSucursal"></div>
+    </section>
+
+    <section id="vistaMatriz" style="display:none;">
+      <div id="cardsMatriz" class="cards"></div>
+      <canvas id="heatmapMatriz" height="80"></canvas>
+      <div id="tablaIndicadoresMatriz"></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
