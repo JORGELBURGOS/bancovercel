@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard KPIs - Banco Ejemplo</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Banco Ejemplo</h2>
+    <nav>
+      <ul>
+        <li><a href="#tablero">Tablero</a></li>
+        <li><a href="#casa-matriz">Casa Matriz</a></li>
+      </ul>
+    </nav>
+  </div>
+  <main>
+    <section id="filtros">
+      <div class="filtro">
+        <label for="periodoSelect">Período</label>
+        <select id="periodoSelect"></select>
+      </div>
+      <div class="filtro">
+        <label for="perspectivaSelect">Perspectiva</label>
+        <select id="perspectivaSelect"></select>
+      </div>
+      <div class="filtro">
+        <label for="sucursalSelect">Sucursal</label>
+        <select id="sucursalSelect"></select>
+      </div>
+      <div class="filtro">
+        <label for="oficialSelect">Oficial</label>
+        <select id="oficialSelect"></select>
+      </div>
+    </section>
+
+    <section id="tablero">
+      <h2>KPIs Consolidados</h2>
+      <div id="cardsContainer"></div>
+      <div id="tablaIndicadores"></div>
+    </section>
+
+    <section id="casa-matriz">
+      <h2>KPIs Casa Matriz</h2>
+      <div id="tablaCasaMatriz"></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
