@@ -1,105 +1,82 @@
+document.addEventListener('DOMContentLoaded', function () {
+  let data = [];
+  let filtros = {
+    periodo: '',
+    perspectiva: '',
+    sucursal: '',
+    oficial: ''
+  };
 
-document.addEventListener("DOMContentLoaded", () => {
-  const periodoSelect = document.getElementById("periodoSelect");
-  const perspectivaSelect = document.getElementById("perspectivaSelect");
-  const sucursalSelect = document.getElementById("sucursalSelect");
-  const oficialSelect = document.getElementById("oficialSelect");
-  const cardsContainer = document.getElementById("cardsContainer");
-  const tablaIndicadores = document.getElementById("tablaIndicadores");
-  const tablaCasaMatriz = document.getElementById("tablaCasaMatriz");
+  async function cargarDatos() {
+    try {
+      const response = await fetch('simulacion_kpis_banco_ejemplo.csv');
+      const text = await response.text();
+      const rows = text.split('\n').slice(1);
+      data = rows
+        .map(row => row.trim())
+        .filter(row => row && row.split(',').length === 7)
+        .map(row => {
+          const [Mes, Unidad, Sucursal, Perspectiva, Indicador, Valor, UnidadMedida] = row.split(',');
+          return { Mes, Unidad, Sucursal, Perspectiva, Indicador, Valor: parseFloat(Valor), UnidadMedida };
+        });
 
-  let datos = [];
-  let oficialesPorSucursal = {};
-
-  fetch("datos.csv")
-    .then(response => response.text())
-    .then(csv => {
-      datos = csv.split("\n").slice(1).map(linea => {
-        const [periodo, perspectiva, sucursal, oficial, indicador, valor] = linea.split(",");
-        if (!oficialesPorSucursal[sucursal]) oficialesPorSucursal[sucursal] = new Set();
-        oficialesPorSucursal[sucursal].add(oficial);
-        return { periodo, perspectiva, sucursal, oficial, indicador, valor: parseFloat(valor) };
-      });
-
-      cargarFiltros();
+      inicializarFiltros();
       aplicarFiltros();
-    });
-
-  function cargarFiltros() {
-    const periodos = [...new Set(datos.map(d => d.periodo))];
-    const perspectivas = [...new Set(datos.map(d => d.perspectiva))];
-    const sucursales = [...new Set(datos.map(d => d.sucursal))];
-
-    periodoSelect.innerHTML = "<option value=''>Todos</option>" + periodos.map(p => `<option>${p}</option>`).join("");
-    perspectivaSelect.innerHTML = "<option value=''>Todas</option>" + perspectivas.map(p => `<option>${p}</option>`).join("");
-    sucursalSelect.innerHTML = "<option value=''>Todas</option>" + sucursales.map(s => `<option>${s}</option>`).join("");
-    oficialSelect.innerHTML = "<option value=''>Todos</option>";
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+    }
   }
 
-  sucursalSelect.addEventListener("change", () => {
-    const sucursal = sucursalSelect.value;
-    oficialSelect.innerHTML = "<option value=''>Todos</option>";
-    if (sucursal && oficialesPorSucursal[sucursal]) {
-      oficialesPorSucursal[sucursal].forEach(oficial => {
-        oficialSelect.innerHTML += `<option>${oficial}</option>`;
-      });
-    }
-    aplicarFiltros();
-  });
+  function inicializarFiltros() {
+    const periodos = [...new Set(data.map(d => d.Mes))].sort();
+    const sucursales = [...new Set(data.map(d => d.Sucursal))].filter(s => s !== "Casa Matriz").sort();
+    const oficiales = [...new Set(data.map(d => d.Unidad))].filter(u => u !== "Procesamiento Comercial").sort();
+    const perspectivas = [...new Set(data.map(d => d.Perspectiva))].sort();
 
-  [periodoSelect, perspectivaSelect, oficialSelect].forEach(select =>
-    select.addEventListener("change", aplicarFiltros)
-  );
+    const filtroPeriodo = document.getElementById('filtroPeriodo');
+    const filtroSucursal = document.getElementById('filtroSucursal');
+    const filtroOficial = document.getElementById('filtroOficial');
+    const filtroPerspectiva = document.getElementById('filtroPerspectiva');
+
+    if (!filtroPeriodo || !filtroSucursal || !filtroOficial || !filtroPerspectiva) return;
+
+    filtroPeriodo.innerHTML = '<option value="">Todos</option>';
+    filtroSucursal.innerHTML = '<option value="">Todas</option>';
+    filtroOficial.innerHTML = '<option value="">Todos</option>';
+    filtroPerspectiva.innerHTML = '<option value="">Todas</option>';
+
+    periodos.forEach(p => filtroPeriodo.innerHTML += `<option value="${p}">${p}</option>`);
+    sucursales.forEach(s => filtroSucursal.innerHTML += `<option value="${s}">${s}</option>`);
+    oficiales.forEach(o => filtroOficial.innerHTML += `<option value="${o}">${o}</option>`);
+    perspectivas.forEach(p => filtroPerspectiva.innerHTML += `<option value="${p}">${p}</option>`);
+
+    filtroPeriodo.addEventListener('change', e => { filtros.periodo = e.target.value; aplicarFiltros(); });
+    filtroSucursal.addEventListener('change', e => { filtros.sucursal = e.target.value; aplicarFiltros(); });
+    filtroOficial.addEventListener('change', e => { filtros.oficial = e.target.value; aplicarFiltros(); });
+    filtroPerspectiva.addEventListener('change', e => { filtros.perspectiva = e.target.value; aplicarFiltros(); });
+  }
 
   function aplicarFiltros() {
-    const periodo = periodoSelect.value;
-    const perspectiva = perspectivaSelect.value;
-    const sucursal = sucursalSelect.value;
-    const oficial = oficialSelect.value;
-
-    const filtrados = datos.filter(d =>
-      (!periodo || d.periodo === periodo) &&
-      (!perspectiva || d.perspectiva === perspectiva) &&
-      (!sucursal || d.sucursal === sucursal) &&
-      (!oficial || d.oficial === oficial)
+    const resultados = data.filter(d =>
+      (!filtros.periodo || d.Mes === filtros.periodo) &&
+      (!filtros.sucursal || d.Sucursal === filtros.sucursal) &&
+      (!filtros.oficial || d.Unidad === filtros.oficial) &&
+      (!filtros.perspectiva || d.Perspectiva === filtros.perspectiva)
     );
 
-    mostrarCards(filtrados);
-    mostrarTabla(filtrados);
-  }
+    const contenedor = document.getElementById('resultadoIndicadores');
+    if (!contenedor) return;
 
-  function mostrarCards(filtrados) {
-    cardsContainer.innerHTML = "";
-    const resumen = {};
-    filtrados.forEach(d => {
-      const clave = d.perspectiva + " - " + d.indicador;
-      resumen[clave] = (resumen[clave] || 0) + d.valor;
-    });
-
-    Object.entries(resumen).forEach(([clave, valor]) => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `<strong>${clave}</strong><br/>${valor.toFixed(2)}`;
-      cardsContainer.appendChild(card);
+    contenedor.innerHTML = '';
+    resultados.forEach(d => {
+      const color = d.Valor >= 85 ? 'green' : d.Valor >= 70 ? 'orange' : 'red';
+      contenedor.innerHTML += `
+        <div class="indicador-card" style="border-left: 5px solid ${color}; padding: 8px; margin: 4px 0;">
+          <strong>${d.Indicador}</strong> (${d.Perspectiva})<br/>
+          ${d.Valor} ${d.UnidadMedida} – ${d.Unidad}, ${d.Sucursal}, ${d.Mes}
+        </div>`;
     });
   }
 
-  function mostrarTabla(filtrados) {
-    const agrupado = {};
-    filtrados.forEach(d => {
-      if (!agrupado[d.perspectiva]) agrupado[d.perspectiva] = [];
-      agrupado[d.perspectiva].push(d);
-    });
-
-    tablaIndicadores.innerHTML = "";
-    Object.keys(agrupado).forEach(perspectiva => {
-      const grupo = agrupado[perspectiva];
-      let html = `<h3>${perspectiva}</h3><table><tr><th>Sucursal</th><th>Oficial</th><th>Indicador</th><th>Valor</th></tr>`;
-      grupo.forEach(d => {
-        html += `<tr><td>${d.sucursal}</td><td>${d.oficial}</td><td>${d.indicador}</td><td>${d.valor}</td></tr>`;
-      });
-      html += "</table>";
-      tablaIndicadores.innerHTML += html;
-    });
-  }
+  cargarDatos();
 });
