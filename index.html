@@ -1,75 +1,80 @@
 
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<title>Dashboard KPIs – Banco Ejemplo</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content='width=device-width, initial-scale=1.0' />
+  <title>Dashboard KPIs - Banco Ejemplo</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gray-100 text-gray-800">
-<div class="flex min-h-screen">
-<aside class="w-64 bg-blue-900 text-white p-6">
-<h1 class="text-xl font-bold mb-6">Banco Ejemplo</h1>
-<nav class="space-y-4">
-<a class="block hover:bg-blue-800 p-2 rounded" href="#" onclick="mostrarVista('sucursales')">Sucursales</a>
-<a class="block hover:bg-blue-800 p-2 rounded" href="#" onclick="mostrarVista('casaMatriz')">Casa Matriz</a>
-</nav>
-</aside>
-<main class="flex-1 p-6 space-y-6">
-<div id="vistaSucursales">
-<h2 class="text-2xl font-bold text-blue-900">KPIs por Sucursal y Oficial</h2>
-<div class="flex flex-wrap gap-4 items-center">
-<select class="p-2 border rounded-md" id="filtroPeriodo"><option value="">Todos los períodos</option></select>
-<select class="p-2 border rounded-md" id="filtroPerspectiva">
-<option value="">Todas las perspectivas</option>
-<option value="Eficiencia">Eficiencia</option>
-<option value="Calidad">Calidad</option>
-<option value="Experiencia">Experiencia</option>
-</select>
-<select class="p-2 border rounded-md" id="filtroSucursal"><option value="">Todas las sucursales</option></select>
-<select class="p-2 border rounded-md" id="filtroOficial"><option value="">Todos los oficiales</option></select>
-<button class="ml-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" id="btnExportar">Exportar CSV</button>
-</div>
-<div class="grid grid-cols-3 gap-6 mt-4">
-<div class="bg-white p-4 rounded-xl shadow-md border-l-8 border-green-500">
-<h3 class="text-lg font-semibold text-gray-600">Eficiencia</h3>
-<p class="text-3xl font-bold text-green-700" id="kpi-eficiencia">--</p>
-</div>
-<div class="bg-white p-4 rounded-xl shadow-md border-l-8 border-yellow-500">
-<h3 class="text-lg font-semibold text-gray-600">Calidad</h3>
-<p class="text-3xl font-bold text-yellow-700" id="kpi-calidad">--</p>
-</div>
-<div class="bg-white p-4 rounded-xl shadow-md border-l-8 border-red-500">
-<h3 class="text-lg font-semibold text-gray-600">Experiencia</h3>
-<p class="text-3xl font-bold text-red-700" id="kpi-experiencia">--</p>
-</div>
-</div>
-<div class="bg-white p-6 rounded-xl shadow-md mt-8 overflow-auto">
-<h4 class="font-semibold mb-4">Detalle de Indicadores</h4>
-<table class="min-w-full table-auto border-collapse text-sm">
-<thead>
-<tr class="bg-blue-900 text-white">
-<th class="px-4 py-2">Unidad</th>
-<th class="px-4 py-2">Sucursal</th>
-<th class="px-4 py-2">Indicador</th>
-<th class="px-4 py-2">Perspectiva</th>
-<th class="px-4 py-2">Valor</th>
-<th class="px-4 py-2">Unidad de Medida</th>
-<th class="px-4 py-2">Semáforo</th>
-</tr>
-</thead>
-<tbody class="text-center" id="tabla-kpis"></tbody>
-</table>
-</div>
-</div>
-<div class="hidden" id="vistaCasaMatriz">
-<h2 class="text-2xl font-bold text-blue-900">KPIs – Casa Matriz (Procesamiento Comercial)</h2>
-<div class="bg-white p-6 mt-4 rounded-xl shadow-md overflow-auto" id="tabla-casa-matriz"></div>
-</div>
-</main>
-</div>
-<script src="app.js"></script>
+<body>
+  <div class="sidebar">
+    <h2>Banco Ejemplo</h2>
+    <ul>
+      <li><a href="#resumen">📊 KPIs</a></li>
+      <li><a href="#detalle">📋 Detalle</a></li>
+      <li><a href="#matriz">🏛 Casa Matriz</a></li>
+    </ul>
+  </div>
+  <div class="main">
+    <header>
+      <h1>Dashboard de KPIs</h1>
+      <div class="filters">
+        <div><label for="periodoSelect">📅 Período</label><select id="periodoSelect"><option>2024-06</option><option>2024-07</option></select></div>
+        <div><label for="perspectivaSelect">🎯 Perspectiva</label><select id="perspectivaSelect"><option>Eficiencia</option><option>Calidad</option><option>Experiencia</option></select></div>
+        <div><label for="sucursalSelect">🏢 Sucursal</label><select id="sucursalSelect"><option>Asunción</option><option>Encarnación</option></select></div>
+        <div><label for="oficialSelect">👤 Oficial</label><select id="oficialSelect"><option>Juan González</option><option>María Ramírez</option></select></div>
+      </div>
+    </header>
+
+    <section id="resumen">
+      <h2>KPIs Consolidados</h2>
+      <div class="cards">
+        <div class="card green">
+          <h3>Eficiencia</h3>
+          <p>✅ 94%</p>
+          <small>Mes anterior: 91% | Trimestre: 89% | Año anterior: 88%</small>
+        </div>
+        <div class="card yellow">
+          <h3>Calidad</h3>
+          <p>⚠️ 83%</p>
+          <small>Mes anterior: 85% | Trimestre: 80% | Año anterior: 84%</small>
+        </div>
+        <div class="card red">
+          <h3>Experiencia</h3>
+          <p>❌ 72%</p>
+          <small>Mes anterior: 76% | Trimestre: 79% | Año anterior: 81%</small>
+        </div>
+      </div>
+    </section>
+
+    <section id="detalle">
+      <h2>Detalle de Indicadores</h2>
+      <div id="tablaIndicadores">
+        <h3>Eficiencia</h3>
+        <table>
+          <thead><tr><th>Indicador</th><th>Valor</th><th>Budget</th><th>Cumplimiento</th></tr></thead>
+          <tbody>
+            <tr><td>Tiempo de Onboarding</td><td>90</td><td>95</td><td>94%</td></tr>
+            <tr><td>Reintentos</td><td>85</td><td>90</td><td>91%</td></tr>
+          </tbody>
+        </table>
+        <h3>Calidad</h3>
+        <table>
+          <thead><tr><th>Indicador</th><th>Valor</th><th>Budget</th><th>Cumplimiento</th></tr></thead>
+          <tbody>
+            <tr><td>Errores</td><td>80</td><td>85</td><td>94%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="matriz">
+      <h2>Casa Matriz</h2>
+      <div id="tablaCasaMatriz">
+        <p><strong>Eficiencia:</strong> 92% | <strong>Calidad:</strong> 85% | <strong>Experiencia:</strong> 77%</p>
+      </div>
+    </section>
+  </div>
 </body>
 </html>
